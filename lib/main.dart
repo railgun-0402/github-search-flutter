@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:github_app/page/article_page.dart';
 import 'package:http/http.dart' as http;
 
 void main() {
-  runApp(SearchApp());
+  runApp(const SearchApp());
 }
 
 class SearchApp extends StatelessWidget {
+  const SearchApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,18 +17,20 @@ class SearchApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SearchScreen(),
+      home: const SearchScreen(),
     );
   }
 }
 
 class SearchScreen extends StatefulWidget {
+  const SearchScreen({super.key});
+
   @override
   _SearchScreenState createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   List<dynamic> _searchResults = [];
 
   void _searchRepositories() async {
@@ -53,7 +58,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('GitHub Repo Search'),
+        title: const Text('GitHub Repo Search'),
       ),
       body: Column(
         children: [
@@ -64,7 +69,7 @@ class _SearchScreenState extends State<SearchScreen> {
               decoration: InputDecoration(
                 labelText: 'Keyword',
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
+                  icon: const Icon(Icons.search),
                   onPressed: _searchRepositories,
                 ),
               ),
@@ -78,7 +83,20 @@ class _SearchScreenState extends State<SearchScreen> {
                 return ListTile(
                   title: Text(repo['name']),
                   subtitle: Text(repo['description']),
-                  trailing: Text('Stars: ${repo['stargazers_count']}'),
+                  trailing: const Icon(Icons.chevron_right),
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(repo['owner']['avatar_url']),
+                  ),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ArticlePage(
+                            title: repo['name'],
+                            url: repo['owner']['html_url'],
+                          ),
+                        ),
+                      );
+                    },
                 );
               },
             ),
